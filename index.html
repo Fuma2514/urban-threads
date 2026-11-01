@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Urban Threads — AI Order &amp; FAQ Assistant</title>
+<style>
+body{margin:0;font-family:'Helvetica Neue',Arial,sans-serif;background:#141414;color:#f5f5f5}
+.hero{padding:48px 24px;text-align:center;background:linear-gradient(160deg,#1f1f1f,#2e2e2e);border-bottom:2px solid #ff5a3c}
+h1{margin:0;font-size:2rem;color:#ff5a3c}.sub{opacity:.85;margin-top:8px}
+.chatbox{max-width:520px;margin:32px auto;background:#1e1e1e;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.5);overflow:hidden}
+.hd{padding:14px 18px;background:#ff5a3c;color:#141414;font-weight:bold}
+#log{height:320px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:80%;padding:10px 14px;border-radius:12px;line-height:1.4}
+.bot{background:#2c2c2c;align-self:flex-start}.usr{background:#ff5a3c;color:#141414;align-self:flex-end}
+form{display:flex;border-top:1px solid #2c2c2c}input{flex:1;padding:14px;background:#141414;border:0;color:#f5f5f5;outline:0}
+button{padding:14px 20px;background:#ff5a3c;border:0;color:#141414;font-weight:bold;cursor:pointer}
+.ft{max-width:520px;margin:0 auto 40px;text-align:center;opacity:.7;font-size:.85rem;padding:0 16px}
+</style></head><body>
+<div class="hero"><h1>Urban Threads</h1><div class="sub">Order status, sizing, shipping &amp; returns — answered instantly by AI, 24/7</div></div>
+<div class="chatbox"><div class="hd">AI Assistant — ask anything</div><div id="log"></div>
+<form id="f"><input id="i" placeholder="Where is my order #1024?" autocomplete="off"><button>Send</button></form></div>
+<div class="ft">Demo assistant built by Fuma Agent · live in under 24h for any online store</div>
+<script>
+const log=document.getElementById('log');
+function add(t,who){const d=document.createElement('div');d.className='m '+who;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+add("Hi! I can check your order status or answer questions about sizing, shipping, and returns. What can I do for you?","bot");
+const DB={size:"Sizing: S fits chest 34–36\", M 38–40\", L 42–44\", XL 46–48\". Our tees run true to size; for a relaxed fit, go one size up.",shipping:"Standard shipping is $5 (3–5 business days), express is $12 (1–2 business days). Free standard shipping on orders over $50. We ship Mon–Fri.",return:"Returns are free within 30 days — items just need tags attached. Start a return by replying to your order confirmation email, and we'll send a prepaid label.",exchange:"Yes! Exchanges for a different size or color are free within 30 days, subject to stock.",stock:"If something shows out of stock, restocks usually land within 2 weeks. Ask me about a specific item and I'll check."};
+let stage=0,order=null;
+function reply(q){const l=q.toLowerCase();
+for(const k in DB){if(l.includes(k))return DB[k]}
+if(l.includes('order')||l.includes('track')||l.includes('status')||l.includes('where')){stage=1;return "Sure — what's your order number? (e.g. #1024)"}
+if(stage==1){order=q.trim();stage=0;
+const states={"1024":"Shipped — arriving Tue via UPS, tracking 1Z999AA101.","1025":"Processing — packed and leaving our warehouse tomorrow.","1026":"Delivered on Thursday at 3:12pm — left at your front door.","1027":"On hold — the payment provider flagged it; our team will email you today."};
+const num=order.replace('#','').trim();
+return states[num]||"I couldn't find "+order+" in the demo system (demo orders: #1024–#1027). In a live build this would pull from your store backend. Anything else — sizing, shipping, returns?";}
+return "I can help with order status, sizing, shipping, returns, and exchanges. Try \"where is my order\"!";}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();const i=document.getElementById('i');const q=i.value.trim();if(!q)return;add(q,'usr');i.value='';setTimeout(()=>add(reply(q),'bot'),400)};
+</script></body></html>
